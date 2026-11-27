@@ -90,7 +90,7 @@ export default function Board({ session, onLobby, onNewGame }) {
         {rows(board.teams).map((row, r) => (
           <div key={r} className="mx-auto" style={{ maxWidth: `${row.length * 20}rem` }}>
             <Mural scene={board.game.scene} seed={r + 1} className="shadow-2xl"
-              teams={row.map((t) => ({ name: t.name, color: t.color, wall: t.case?.file.wall ?? [], sketch: t.case && !t.case.finished ? t.case.file.current?.graph.paths : [] }))} />
+              teams={row.map((t) => ({ name: t.name, color: t.color, wall: t.case?.file.wall ?? [], sketch: t.case && !t.case.finished ? t.case.file.current?.graph?.paths ?? [] : [] }))} />
             <div className="mt-5 grid gap-2" style={{ gridTemplateColumns: `repeat(${row.length}, minmax(0, 1fr))` }}>
               {row.map((t) => <TeamCard key={t.index} team={t} serverNow={serverNow} onPeek={() => setPeek({ index: t.index, name: t.name })} />)}
             </div>

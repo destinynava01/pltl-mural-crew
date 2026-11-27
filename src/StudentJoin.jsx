@@ -247,7 +247,14 @@ function Task({ c, color, lead, busy, canReveal, onAnswer, onReveal }) {
           </div>
         )}
         {cur.kind === 'interval' && <IntervalSet label="Interval (x-values)" value={answer.interval} onChange={(interval) => set({ interval })} max={1} />}
-        {cur.kind === 'number' && <Num label="Average rate of change" placeholder="like 3 or -1/2" value={answer.number} onChange={(number) => set({ number })} />}
+        {cur.kind === 'number' && <Num label={cur.fixed ? 'Your answer' : 'Average rate of change'} placeholder={cur.fixed ? 'a number (3/4 is fine)' : 'like 3 or -1/2'} value={answer.number} onChange={(number) => set({ number })} />}
+        {cur.kind === 'pick' && (
+          <div className="grid gap-1.5">
+            {cur.fields?.[0]?.choices.map((ch) => (
+              <button key={ch.id} type="button" className={`${chip(answer.picks?.choice === ch.id)} text-left text-sm`} onClick={() => set({ picks: { choice: ch.id } })}>{ch.text}</button>
+            ))}
+          </div>
+        )}
         {cur.kind === 'point' && <PointInput x={answer.x} y={answer.y} onChange={set} />}
         {cur.kind === 'yesno' && (
           <div className="grid grid-cols-2 gap-2">
@@ -292,6 +299,7 @@ function blank(kind) {
     case 'number': return { number: '' }
     case 'point': return { x: '', y: '' }
     case 'extremum': return { kind: '', x: '', y: '' }
+    case 'pick': return { picks: {} }
     default: return {}
   }
 }
@@ -305,6 +313,7 @@ function ready(kind, a) {
     case 'point': return filled(a.x) && filled(a.y)
     case 'extremum': return a.kind === 'none' || (Boolean(a.kind) && filled(a.x) && filled(a.y))
     case 'yesno': return a.yes === true || a.yes === false
+    case 'pick': return Boolean(a.picks?.choice)
     default: return false
   }
 }
