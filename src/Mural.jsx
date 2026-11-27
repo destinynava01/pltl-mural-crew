@@ -149,7 +149,7 @@ export default function Mural({ scene = 'city', teams, seed = 1, labels = true, 
   const Art = SCENE_ART[scene] ?? City
   const at = (i) => (path) => path.map(([x, y]) => `${i * S + S / 2 + x * UNIT},${S / 2 - y * UNIT}`).join(' ')
   return (
-    <svg viewBox={`0 0 ${W} ${S}`} className={`block w-full rounded-xl ${className}`} role="img" aria-label="The crew's mural">
+    <svg viewBox={`0 0 ${W} ${S}`} className={`mx-auto block w-full rounded-xl ${className}`} style={{ maxWidth: `${teams.length * 20}rem` }} role="img" aria-label="The crew's mural">
       <Art W={W} r={rng(seed + scene.length * 7)} id={id} />
       <rect width={W} height={S} fill="#000" opacity="0.22" />
       {teams.map((t, i) => (
