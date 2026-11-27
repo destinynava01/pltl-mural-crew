@@ -140,7 +140,7 @@ function Room({ saved, onLeave }) {
   let body
 
   if (player.approval_status !== 'approved') body = <Note title="Almost in!" text="Your leader will put you on a crew in a moment." />
-  else if (view.game.status === 'setup') body = <Note title={`You're on ${myTeam?.name ?? 'a crew'}`} text="The game starts soon. Watch the projector." />
+  else if (view.game.status === 'setup') body = <Note title={`You're on ${myTeam?.name ?? 'a crew'}`} text="The game starts soon. Grab some scratch paper for sketching pieces and working out rates of change, and watch the projector." />
   else if (!c) body = <Note title="Shaking the spray cans…" text="" />
   else if (view.game.status === 'finished' || c.finished) {
     body = (
