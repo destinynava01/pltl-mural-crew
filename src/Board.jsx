@@ -85,15 +85,17 @@ export default function Board({ session, onLobby, onNewGame }) {
       </header>
       {error && <p className="mx-auto mt-3 max-w-7xl rounded-lg bg-bad-soft px-3 py-2 font-bold text-bad">{error}</p>}
 
-      <section className="mx-auto mt-6 max-w-7xl space-y-3">
+      {/* Each row of the wall, with every team's card right under its own section */}
+      <section className="mt-6 space-y-8">
         {rows(board.teams).map((row, r) => (
-          <Mural key={r} scene={board.game.scene} seed={r + 1} className="shadow-2xl"
-            teams={row.map((t) => ({ name: t.name, color: t.color, wall: t.case?.file.wall ?? [], sketch: t.case && !t.case.finished ? t.case.file.current?.graph.paths : [] }))} />
+          <div key={r} className="mx-auto" style={{ maxWidth: `${row.length * 20}rem` }}>
+            <Mural scene={board.game.scene} seed={r + 1} className="shadow-2xl"
+              teams={row.map((t) => ({ name: t.name, color: t.color, wall: t.case?.file.wall ?? [], sketch: t.case && !t.case.finished ? t.case.file.current?.graph.paths : [] }))} />
+            <div className="mt-5 grid gap-2" style={{ gridTemplateColumns: `repeat(${row.length}, minmax(0, 1fr))` }}>
+              {row.map((t) => <TeamCard key={t.index} team={t} serverNow={serverNow} onPeek={() => setPeek({ index: t.index, name: t.name })} />)}
+            </div>
+          </div>
         ))}
-      </section>
-
-      <section className={`mx-auto mt-6 grid max-w-7xl gap-6 ${board.teams.length > 1 ? 'md:grid-cols-2' : ''} ${board.teams.length > 2 ? 'xl:grid-cols-3' : ''} ${board.teams.length > 3 ? '2xl:grid-cols-4' : ''}`}>
-        {board.teams.map((t) => <TeamCard key={t.index} team={t} serverNow={serverNow} onPeek={() => setPeek({ index: t.index, name: t.name })} />)}
       </section>
       {peek && <Peek call={call} team={{ ...peek, color: board.teams[peek.index]?.color }} stamp={board} onClose={() => setPeek(null)} />}
     </main>
@@ -118,13 +120,13 @@ function TeamCard({ team, serverNow, onPeek }) {
   const cur = f.current
   return (
     <article className={`paper pinned rounded-xl ${fresh && e.kind === 'wrong' ? 'shake' : ''}`} key={fresh && e.kind === 'wrong' ? e.at : 'card'}>
-      <div className="flex items-start justify-between gap-3 border-b border-line px-5 pb-3 pt-4">
+      <div className="flex items-start justify-between gap-2 border-b border-line px-4 pb-3 pt-4">
         <div className="min-w-0">
-          <h2 className="truncate font-display text-2xl" style={{ color: team.color }}>{team.name}</h2>
+          <h2 className="truncate font-display text-xl" style={{ color: team.color }}>{team.name}</h2>
           <p className="truncate text-sm text-muted">{team.members.join(', ')}</p>
         </div>
         <div className="text-right">
-          <p className="font-display text-3xl text-spike">{c.points}</p>
+          <p className="font-display text-2xl text-spike">{c.points}</p>
           <p className="text-sm text-muted">points</p>
         </div>
       </div>
@@ -136,8 +138,8 @@ function TeamCard({ team, serverNow, onPeek }) {
             const done = r.done === r.steps
             const now = !c.finished && cur?.round === r.id
             return (
-              <li key={r.id} className={`rounded-md px-2 py-1 text-xs font-bold ${done ? 'bg-ok-soft text-ok' : now ? 'bg-accent-soft text-accent' : 'bg-panel text-muted'}`}>
-                {meta.emoji} {meta.title} {r.done}/{r.steps}
+              <li key={r.id} title={meta.title} className={`rounded-md px-2 py-1 text-xs font-bold ${done ? 'bg-ok-soft text-ok' : now ? 'bg-accent-soft text-accent' : 'bg-panel text-muted'}`}>
+                {meta.emoji} {r.done}/{r.steps}
               </li>
             )
           })}
@@ -146,15 +148,15 @@ function TeamCard({ team, serverNow, onPeek }) {
           {c.finished ? (
             <p className="py-10 text-center"><Stamp className="text-2xl">{medal[c.finish_rank - 1] ?? ''} Wall painted</Stamp></p>
           ) : cur ? (
-            <div className="mx-auto max-w-[15rem]"><Graph graph={cur.graph} color={team.color} /></div>
+            <div className="mx-auto max-w-[13rem]"><Graph graph={cur.graph} color={team.color} /></div>
           ) : null}
         </div>
       </div>
 
-      <div className="px-5 pb-4 pt-3">
+      <div className="px-4 pb-4 pt-3">
         {!c.finished && cur && (
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm">🎨 <b>{cur.title}</b> · lead: <b>{team.lead ?? '…'}</b>{c.misses ? <span className="text-bad"> · {c.misses} wrong</span> : ''}</p>
+            <p className="min-w-0 text-sm">🎨 <b>{cur.title}</b> · lead: <b>{team.lead ?? '…'}</b>{c.misses ? <span className="text-bad"> · {c.misses} wrong</span> : ''}</p>
             <button type="button" onClick={onPeek} className="shrink-0 rounded-md border border-line bg-panel px-2 py-1 text-xs font-bold text-accent hover:bg-hover" aria-label={`Peek at ${team.name}`}>👀 Peek</button>
           </div>
         )}
